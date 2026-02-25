@@ -125,5 +125,44 @@ df_cleaned$Course <- as.factor(df_cleaned$Course)
 # Convert empty strings to actual NA
 df_cleaned[df_cleaned == ""] <- NA
 
+
+# Remove id in total payments
+
+# take last 3 digits in the total payments (last_digit)
+# Step 1: Convert the number to a character string
+
+payment_str <- as.character(df_cleaned$Total_Payments)
+print(head(payment_str))
+
+# Step 2: Use gsub() to insert a delimiter (space) between each digit
+pay_with_spaces <- gsub("(.)", "\\1 ", payment_str)
+print(str(pay_with_spaces))
+
+# Step 3: Use strsplit() to split the string on the delimiter
+for (i in 1:length(pay_with_spaces)){
+  digits = c()
+  digits <- strsplit(pay_with_spaces[i], " ")[[1]]
+  
+  last_3_string <- paste(tail(digits, 3), collapse = "")
+  last_3_num <- as.numeric(last_3_string)
+  
+  # Step 4: Convert the result back to numeric
+  
+  #digits_numeric <- as.numeric(digits)
+
+  #last_3_digits = tail(digits_numeric,3)
+
+  
+  if (last_3_num == df_cleaned$Student_ID[i]){
+    df_cleaned$Total_Payments[i] <- as.numeric(substr(as.character(df_cleaned$Total_Payments[i]), 1, nchar(as.character(df_cleaned$Total_Payments[i])) - 3))
+  }
+  
+}
+
+print(head(df_cleaned))
+
+
+# compare last_digit with id. if same remove.
+
 # write new file called cleaned*
 write.csv (df_cleaned , file= 'cleanedStudent.csv')
